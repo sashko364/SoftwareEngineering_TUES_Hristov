@@ -1,0 +1,21 @@
+<body>
+    {% include "navigation.html" %}
+    <h1> Homework2 </h1>
+    <table>
+          <tr>
+                <th>Time</th>
+                <th>Destination</th>
+                <th>Train</th>
+                <th>Status</th>
+          </tr>
+          {% for train in data %}
+          <tr>
+            <td>{{train.departureTime}}</td>
+            <td>{{train.destination}}</td>
+            <td>{{train.train}}</td>
+            <td>{{train.status}}</td>
+          </tr>
+          {% endfor %}
+    </table>
+
+</body>

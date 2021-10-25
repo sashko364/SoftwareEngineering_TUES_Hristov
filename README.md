@@ -1,2 +1,2 @@
-# SoftwareEngineering_TUES_Hristov
-Na sashko hristov koda
+# software-engineering
+12-b and 12-v

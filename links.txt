@@ -1,0 +1,8 @@
+create django project && app:
+https://docs.djangoproject.com/en/3.2/intro/tutorial01/
+
+django models:
+https://docs.djangoproject.com/en/3.2/intro/tutorial02/
+
+render template && create super user:
+https://docs.djangoproject.com/en/3.2/intro/tutorial03/
