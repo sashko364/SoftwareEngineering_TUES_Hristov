@@ -10,28 +10,35 @@ from django.http import HttpResponse, JsonResponse
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
-def home(request):
-    info = requests.get('https://api-v3.mbta.com/predictions?page%5Boffset%5D=0&page%5Blimit%5D=10&sort=departure_time&include=schedule%2Ctrip&filter%5Bdirection_id%5D=0&filter%5Bstop%5D=place-north').json()
-    data = []
-    for i in info["data"]:
-        trainData = {}
-        trainData["departureTime"] = i["attributes"]["departure_time"]
-        for k in info["included"]:
-            if i["relationships"]["trip"]["data"]["id"] == k["id"]:
-                trainData["destination"] = k["attributes"]["headsign"]
+def data(request):
+    response = requests.get("https://api-v3.mbta.com/predictions?page%5Boffset%5D=0&page%5Blimit%5D=10&sort=departure_time&include=schedule%2Cvehicle%2Ctrip&filter%5Bdirection_id%5D=0&filter%5Bstop%5D=place-north")
+    response = response.json()
+    # new_table = InfoTable(schedule_data[''])
+    # return render(request, 'grafik.html', {'data': schedule_data})
 
-        if i["relationships"]["vehicle"]["data"] is None:
-            trainData["train"] = "null"
-        else:
-            for k in info["included"]:
-                if i["relationships"]["trip"]["data"]["id"] == k["id"]:
-                    trainData["train"] = i['relationships']['vehicle']['data']['id']
+    trains = []
+    for entry in response['data']:
+        status = entry['attributes']['status']
+        trip_id = entry['relationships']['trip']['data']['id']
+        schedule_id = entry['relationships']['schedule']['data']['id']
+        new_line = InfoTableLine(trip_id, schedule_id, "", "", status)
+        trains.append(new_line)
 
-        trainData["status"] = i["attributes"]["status"]
+    for entry in response['included']:
+        if entry['type'] == "trip":
+            for train in trains:
+                if entry['id'] == train.trip_id:
+                    train.destination = entry['attributes']['headsign']
+                    break
 
-        data.append(trainData)
+        elif entry['type'] == "schedule":
+            for train in trains:
+                if entry['id'] == train.schedule_id:
+                    train.departure_time = entry['attributes']['departure_time']
+                    break
 
-    return render(request, 'home.html', {'data': data})
+    # return JsonResponse({'trains': trains}, safe=False)
+    return render(request, 'grafik.html', {'trains': trains})
 
 def about(request):
     return render(request, 'about.html')
